@@ -42,14 +42,19 @@ showCinemaBorder false;
 BIS_DEBUG_CAM setVectorDir _vectorDir;
 BIS_DEBUG_CAM setVectorUp _vectorUp;
 
+_mapIconEH = ((findDisplay 12) displayCtrl 51) ctrlAddEventHandler ["Draw", '
+    (_this select 0) drawIcon [
+        gettext (configfile >> "RscDisplayCamera" >> "iconCamera"),
+        [0,1,1,1],
+		position BIS_DEBUG_CAM,
+		32,
+		32,
+		direction BIS_DEBUG_CAM,
+		"",
+		1
+    ];
 
-//--- Marker
-BIS_DEBUG_CAM_MARKER = createmarkerlocal ["BIS_DEBUG_CAM_MARKER",_pos];
-BIS_DEBUG_CAM_MARKER setmarkertypelocal "mil_start";
-BIS_DEBUG_CAM_MARKER setmarkercolorlocal "colorpink";
-BIS_DEBUG_CAM_MARKER setmarkersizelocal [.75,.75];
-BIS_DEBUG_CAM_MARKER setmarkertextlocal "BIS_DEBUG_CAM";
-
+'];
 
 //--- Key Down
 _keyDown = (finddisplay 46) displayaddeventhandler ["keydown","
@@ -98,8 +103,6 @@ _keyDown = (finddisplay 46) displayaddeventhandler ["keydown","
 		} else {
 			openmap [true,true];
 			BIS_DEBUG_CAM_MAP = true;
-			BIS_DEBUG_CAM_MARKER setmarkerposlocal position BIS_DEBUG_CAM;
-			BIS_DEBUG_CAM_MARKER setmarkerdirlocal direction BIS_DEBUG_CAM;
 			mapanimadd [0,0.1,position BIS_DEBUG_CAM];
 			mapanimcommit;
 		};
@@ -130,19 +133,6 @@ _keyDown = (finddisplay 46) displayaddeventhandler ["keydown","
 	};
 "];
 
-//--- focus on someone
-_mousebuttonclick_focus = (finddisplay 46) displayaddeventhandler ["MouseButtonDblClick","
-	_n = _this select 0;
-	BIS_DEBUG_CAM_FOCUS = BIS_DEBUG_CAM_FOCUS + _n/10;
-	if (_n > 0 && BIS_DEBUG_CAM_FOCUS < 0) then {BIS_DEBUG_CAM_FOCUS = 0};
-	if (BIS_DEBUG_CAM_FOCUS < 0) then {BIS_DEBUG_CAM_FOCUS = -1};
-	BIS_DEBUG_CAM camcommand 'manual off';
-	BIS_DEBUG_CAM campreparefocus [BIS_DEBUG_CAM_FOCUS,1];
-	BIS_DEBUG_CAM camcommitprepared 0;
-	BIS_DEBUG_CAM camcommand 'manual on';
-"];
-
-
 _map_mousebuttonclick = ((finddisplay 12) displayctrl 51) ctrladdeventhandler ["mousebuttonclick","
 	_button = _this select 1;
 	_ctrl = _this select 5;
@@ -155,7 +145,6 @@ _map_mousebuttonclick = ((finddisplay 12) displayctrl 51) ctrladdeventhandler ["
 			_veh setpos [_worldpos select 0,_worldpos select 1,position _veh select 2];
 		} else {
 			BIS_DEBUG_CAM setpos [_worldpos select 0,_worldpos select 1,position BIS_DEBUG_CAM select 2];
-			BIS_DEBUG_CAM_MARKER setmarkerposlocal _worldpos;
 		};
 	};
 "];
@@ -164,13 +153,10 @@ _map_mousebuttonclick = ((finddisplay 12) displayctrl 51) ctrladdeventhandler ["
 
 
 //Wait until destroy is forced or camera auto-destroyed.
-[_local,_keyDown,_mousebuttonclick_focus,_map_mousebuttonclick] spawn {
-	private ["_local","_keyDown","_mousebuttonclick_focus","_map_mousebuttonclick","_lastpos", "_lastVectorUp", "_lastVectorDir"];
+[_local,_keyDown,_map_mousebuttonclick, _mapIconEH] spawn {
+	private ["_local","_keyDown","_map_mousebuttonclick","_lastpos", "_lastVectorUp", "_lastVectorDir"];
 
-	_local = _this select 0;
-	_keyDown = _this select 1;
-	_mousebuttonclick_focus = _this select 2;
-	_map_mousebuttonclick = _this select 3;
+	params ["_local", "_keyDown", "_map_mousebuttonclick", "_mapIconEH"];
 
 	waituntil {
 		if (!isnull BIS_DEBUG_CAM) then {
@@ -182,10 +168,8 @@ _map_mousebuttonclick = ((finddisplay 12) displayctrl 51) ctrladdeventhandler ["
 	};
 
 	player cameraEffect ["TERMINATE", "BACK"];
-	deletemarkerlocal BIS_DEBUG_CAM_MARKER;
 	BIS_DEBUG_CAM = nil;
 	BIS_DEBUG_CAM_MAP = nil;
-	BIS_DEBUG_CAM_MARKER = nil;
 	BIS_DEBUG_CAM_VISION = nil;
 	camDestroy _local;
 	BIS_DEBUG_CAM_LASTPOS = _lastpos;
@@ -194,7 +178,7 @@ _map_mousebuttonclick = ((finddisplay 12) displayctrl 51) ctrladdeventhandler ["
 
 	ppeffectdestroy BIS_DEBUG_CAM_COLOR;
 	(finddisplay 46) displayremoveeventhandler ["keydown",_keyDown];
-	(finddisplay 46) displayremoveeventhandler ["MouseButtonDblClick",_mousebuttonclick_focus];
+	((findDisplay 12) displayCtrl 51) ctrlRemoveEventHandler ["Draw",_mapIconEH];
 	((finddisplay 12) displayctrl 51) ctrlremoveeventhandler ["mousebuttonclick",_map_mousebuttonclick];
 
 };

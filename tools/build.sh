@@ -39,8 +39,9 @@ build_pbo() {
 	echo "packing $componentname"
 
 	pbofilename="${pboprefix}${componentname}.pbo"
-	pbofilepath="${componentpath}/$pbofilename"
+	pbofilepath="${componentpath}\\$pbofilename"
 
+	echo "${pbofilename} ${pbofilepath} ${1}"
 	"${armakePath}" build -f -p "${1}" "$pbofilepath"
 
 	if [[ ! -f "$pbofilepath" ]]; then
