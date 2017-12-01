@@ -5,7 +5,7 @@ class RscInGameUI {
             "StanceIndicatorBackground",
             "StanceIndicator",
             "CombatPaceIndicator"
-		};
+        };
         class StanceIndicatorBackground;
         class StanceIndicator;
         class CombatPaceIndicator: RscPictureKeepAspect {
