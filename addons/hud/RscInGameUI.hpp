@@ -1,10 +1,9 @@
 class RscPictureKeepAspect;
 class RscInGameUI {
     class RscStanceInfo {
-        controls[]=
-		{
-			"StanceIndicatorBackground",
-			"StanceIndicator",
+        controls[] = {
+            "StanceIndicatorBackground",
+            "StanceIndicator",
             "CombatPaceIndicator"
 		};
         class StanceIndicatorBackground;
