@@ -3,10 +3,6 @@
 #include "\A3\ui_f\hpp\defineResinclDesign.inc"
 #include "\A3\ui_f\hpp\defineCommonGrids.inc"
 
-// Macros
-#define CHECK(CONDITION) \
-	if (CONDITION) exitWith {};
-
 // Scripts
 #define GROUPS								{ _this call (missionNamespace getVariable ["BIS_fnc_dynamicGroups", {}]); }
 #define DISPLAY								{ _this call (uiNamespace getVariable ["RscDisplayDynamicGroups_script", {}]); }

@@ -1,5 +1,7 @@
 // Include common defines file
 #include "\x\grad\addons\dynGroups\DynamicGroupsCommonDefines.inc"
+#define CHECK(CONDITION) \
+	if (CONDITION) exitWith {};
 
 private ["_mode", "_params"];
 _mode   = _this param [0, "", [""]];

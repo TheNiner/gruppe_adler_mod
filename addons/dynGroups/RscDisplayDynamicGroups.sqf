@@ -2,7 +2,9 @@
 disableSerialization;
 
 // Include common defines file
-#include "\x\grad\addons\dynGroups\DynamicGroupsCommonDefines.inc"
+#include "addons/dynGroups/DynamicGroupsCommonDefines.inc"
+#define CHECK(CONDITION) \
+	if (CONDITION) exitWith {};
 
 // Script parameters
 private ["_mode", "_params"];
