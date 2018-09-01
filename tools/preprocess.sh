@@ -11,7 +11,7 @@ while getopts 'd:' OPTION; do
       MACRODIR="$OPTARG"
       ;;
     ?)
-      echo "script usage: $(basename $0) [-d project_directory] -m [macro_target_dir]" >&2
+      echo "script usage: $(basename $0) [-d project_directory] [-m macro_target_dir]" >&2
       exit 1
       ;;
   esac
@@ -36,7 +36,7 @@ function downloadMacroLib {
         echo "INFO copying $URL => $TARGETDIR…"
         mkdir -p ${TARGETDIR}
         pushd /tmp
-        wget "$URL" -o tmp_preprocess.tar.gz && tar -xf tmp_preprocess.tar.gz -C ${TARGETDIR}
+        wget "$URL" -O tmp_preprocess.tar.gz && tar -xf tmp_preprocess.tar.gz -C ${TARGETDIR}
         popd
     fi
 }
