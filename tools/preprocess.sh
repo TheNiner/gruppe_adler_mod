@@ -51,14 +51,14 @@ downloadMacroLib ${a3dir} "http://gruppe-adler.de/api/travis/a3.tar.gz"
 
 INCLUDINGFILES=`grep -lire '^\s*#include '`
 
-echo "INFO editing #include clauses: forward-slashes, relative cba/ace paths…"
+echo "INFO editing #include clauses: forward-slashes, correct macro lib include paths…"
 
 for INCLUDEFILE in ${INCLUDINGFILES}; do
-    sed -i '/#include/s/\\/\//g' "$INCLUDEFILE"
-    sed -i '/#include/s/\/x\/cba/x\/'$(escapeSlashesForSed ${cbadir})'/' "$INCLUDEFILE"
-    sed -i '/#include/s/\/z\/ace/z\/'$(escapeSlashesForSed ${acedir})'/' "$INCLUDEFILE"
-    sed -i '/#include/s/\/A3/z\/'$(escapeSlashesForSed ${acedir})'/' "$INCLUDEFILE"
-    sed -i '/#include/s/\/x\/grad\///' "$INCLUDEFILE"
+    sed -i '/#include/s/\\/\//g' "$INCLUDEFILE" #forward-slash all the paths
+    sed -i '/#include/s/\/A3/'$(escapeSlashesForSed ${a3dir})'/' "$INCLUDEFILE"
+    sed -i '/#include/s/\/x\/cba/'$(escapeSlashesForSed ${cbadir})'/' "$INCLUDEFILE"
+    sed -i '/#include/s/\/x\/grad\///' "$INCLUDEFILE" #special case for gruppe_adler_mod
+    sed -i '/#include/s/\/z\/ace/'$(escapeSlashesForSed ${acedir})'/' "$INCLUDEFILE"
 done
 echo "INFO removing illegal double-hash from macro files…"
 for MACROFILE in `find . -iname '*.cpp' -or -iname '*.hpp' -or -iname '*.h' -or -iname '*.inc'`
