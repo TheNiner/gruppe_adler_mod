@@ -35,7 +35,7 @@ else
     mkdir -p ${acedir} && wget "http://gruppe-adler.de/api/travis/ace.tar.gz" && tar -xf ace.tar.gz -C ${acedir}
 fi
 
-INCLUDINGFILES=`grep -lire '^\s*#include'`
+INCLUDINGFILES=`grep -lire '^\s*#include '`
 
 echo "INFO editing #include clauses: forward-slashes, relative cba/ace paths…"
 
@@ -46,9 +46,15 @@ for INCLUDEFILE in ${INCLUDINGFILES}; do
     sed -i '/#include/s/\/x\/grad\///' "$INCLUDEFILE"
 done
 echo "INFO removing illegal double-hash from macro files…"
-for MACROFILE in `find . -iname '*.cpp' -or -iname '*.hpp' -or -iname '*.h'`; do sed -i -e 's/##//g' "$MACROFILE"; done
+for MACROFILE in `find . -iname '*.cpp' -or -iname '*.hpp' -or -iname '*.h' -or -iname '*.inc'`
+do
+    sed -i -e 's/##//g' "$MACROFILE"
+done
 
 echo "INFO starting preprocessing of SQF files…"
-for SQFFILE in `find . -iname '*.sqf'`; do cpp -iquote ./ "$SQFFILE" "${SQFFILE}.1" && mv  "${SQFFILE}.1" "$SQFFILE"; done
+for SQFFILE in `find . -iname '*.sqf'`
+do
+    cpp -iquote ./ "$SQFFILE" "${SQFFILE}.1" && mv "${SQFFILE}.1" "$SQFFILE"
+done
 
 popd
