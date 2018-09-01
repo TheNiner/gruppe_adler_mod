@@ -17,6 +17,7 @@ while getopts 'd:' OPTION; do
   esac
 done
 
+if [[ ${MACRODIR} == "" ]]; then MACRODIR=${DIRECTORY}; fi
 
 pushd "$DIRECTORY"
 
