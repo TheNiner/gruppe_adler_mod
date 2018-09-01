@@ -208,7 +208,8 @@ switch _mode do
 		private ["_playerGroup", "_playerIsLeader", "_playerGroupRegistered"];
 		_playerGroup 		= group player;
 		_playerIsLeader		= player == leader _playerGroup;
-		_playerGroupRegistered	= ["IsGroupRegistered", [_playerGroup]] call GROUPS;
+		_playerGroupRegistered	= (["IsGroupRegistered", [_playerGroup]] call GROUPS) param [0, false, false];
+
 
 		if (!_playerGroupRegistered) then
 		{
@@ -275,13 +276,14 @@ switch _mode do
 			_checkboxPrivate ctrlEnable (_playerIsLeader && {!(missionNamespace getVariable [VAR_MINIMAL_INTERACTION, false])});
 			_checkboxPrivate cbSetChecked _groupIsPrivate;
 			_fillPlayerName ctrlSetText ([player] call BIS_fnc_getName);
-			_fillPlayerSide ctrlSetText (["GetSideFormattedString", [_groupSide]] call DISPLAY);
+			_fillPlayerSide ctrlSetText ((["GetSideFormattedString", [_groupSide]] call DISPLAY) param [0, "", ""]);
 			_fillPlayerScore ctrlSetText (str score player);
 
 			// Update edit box only if player is not leader (cannot edit)
 			private _lastPlayerGroup = uiNamespace getVariable [VAR_LAST_PLAYER_GROUP, grpNull];
 
-			if (!_playerIsLeader || {_initialUpdate} || {_playerGroup != _lastPlayerGroup} || {ctrlText _editGroupName == (["ClampString", [localize "STR_A3_RscDisplayDynamicGroups_Hint"]] call DISPLAY)}) then
+            private _displayedGroupName = format ["%1", (["ClampString", [(localize "STR_A3_RscDisplayDynamicGroups_Hint")]] call DISPLAY)];
+			if (!_playerIsLeader || {_initialUpdate} || {_playerGroup != _lastPlayerGroup} || {(ctrlText _editGroupName) == _displayedGroupName}) then
 			{
 				_editGroupName ctrlSetText _groupName;
 			};
