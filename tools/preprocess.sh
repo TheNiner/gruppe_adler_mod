@@ -7,9 +7,11 @@ while getopts 'd:' OPTION; do
     d)
       DIRECTORY="$OPTARG"
       ;;
-
+    m)
+      MACRODIR="$OPTARG"
+      ;;
     ?)
-      echo "script usage: $(basename $0) [-d project_directory]" >&2
+      echo "script usage: $(basename $0) [-d project_directory] -m [macro_target_dir]" >&2
       exit 1
       ;;
   esac
@@ -18,22 +20,33 @@ done
 
 pushd "$DIRECTORY"
 
-acedir="z/ace"
-cbadir="x/cba"
+acedir="$MACRODIR/z/ace"
+cbadir="$MACRODIR/x/cba"
+a3dir="$MACRODIR/A3"
 
-if [[ -d ${cbadir} ]]; then
-    echo "INFO it seems we already got the cba macros in $cbadir…"
-else
-    echo "INFO getting CBA headers and extracting to $cbadir…"
-    mkdir -p ${cbadir} && wget "http://gruppe-adler.de/api/travis/cba.tar.gz" && tar -xf cba.tar.gz -C ${cbadir}
-fi
+function downloadMacroLib {
+    local TARGETDIR=$1
+    local URL=$2
 
-if [[ -d ${acedir} ]]; then
-    echo "INFO it seems we already got the ace macros in $acedir…"
-else
-    echo "INFO getting ACE headers and extracting to $acedir…"
-    mkdir -p ${acedir} && wget "http://gruppe-adler.de/api/travis/ace.tar.gz" && tar -xf ace.tar.gz -C ${acedir}
-fi
+    if [[ -d ${TARGETDIR} ]]
+    then
+        echo "INFO it seems we already got $TARGETDIR, skipping…"
+    else
+        echo "INFO copying $URL => $TARGETDIR…"
+        mkdir -p ${TARGETDIR}
+        pushd /tmp
+        wget "$URL" -o tmp_preprocess.tar.gz && tar -xf tmp_preprocess.tar.gz -C ${TARGETDIR}
+        popd
+    fi
+}
+
+function escapeSlashesForSed {
+    echo $1 | sed 's/\//\\\//g'
+}
+
+downloadMacroLib ${cbadir} "http://gruppe-adler.de/api/travis/cba.tar.gz"
+downloadMacroLib ${acedir} "http://gruppe-adler.de/api/travis/ace.tar.gz"
+downloadMacroLib ${a3dir} "http://gruppe-adler.de/api/travis/a3.tar.gz"
 
 INCLUDINGFILES=`grep -lire '^\s*#include '`
 
@@ -41,8 +54,9 @@ echo "INFO editing #include clauses: forward-slashes, relative cba/ace paths…"
 
 for INCLUDEFILE in ${INCLUDINGFILES}; do
     sed -i '/#include/s/\\/\//g' "$INCLUDEFILE"
-    sed -i '/#include/s/\/x\/cba/x\/cba/' "$INCLUDEFILE"
-    sed -i '/#include/s/\/z\/ace/z\/ace/' "$INCLUDEFILE"
+    sed -i '/#include/s/\/x\/cba/x\/'$(escapeSlashesForSed ${cbadir})'/' "$INCLUDEFILE"
+    sed -i '/#include/s/\/z\/ace/z\/'$(escapeSlashesForSed ${acedir})'/' "$INCLUDEFILE"
+    sed -i '/#include/s/\/A3/z\/'$(escapeSlashesForSed ${acedir})'/' "$INCLUDEFILE"
     sed -i '/#include/s/\/x\/grad\///' "$INCLUDEFILE"
 done
 echo "INFO removing illegal double-hash from macro files…"
@@ -50,6 +64,8 @@ for MACROFILE in `find . -iname '*.cpp' -or -iname '*.hpp' -or -iname '*.h' -or 
 do
     sed -i -e 's/##//g' "$MACROFILE"
 done
+
+exit 5
 
 echo "INFO starting preprocessing of SQF files…"
 for SQFFILE in `find . -iname '*.sqf'`

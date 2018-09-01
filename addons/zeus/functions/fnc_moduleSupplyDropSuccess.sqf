@@ -42,7 +42,7 @@ _light attachTo [_para, [0,0,0]];
         {
             params ["_box"];
 
-            INFO_1("moduleSupplyDropSuccess L49, _box: %1",_box);
+            INFO_1("moduleSupplyDropSuccess L45 _box: %1",_box);
 
             _box setVariable [QGVAR(supplyDropInProgress), nil, true];
             detach _box;
