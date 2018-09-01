@@ -12,10 +12,10 @@ PROJECTDIR=${THISDIR}/..
 while getopts 'd:C:' OPTION; do
   case "$OPTION" in
     d)
-      PROJECTDIR="$OPTARG"
+      PROJECTDIR=${OPTARG%"/"}
       ;;
     C)
-      WD="$OPTARG"
+      WD=${OPTARG%"/"}
       ;;
     ?)
       echo "script usage: $(basename $0) -d project_directory [-C temp_dir]" >&2

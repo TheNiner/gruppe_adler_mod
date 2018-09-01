@@ -5,10 +5,10 @@ DIRECTORY=`dirname $0`/..
 while getopts 'd:' OPTION; do
   case "$OPTION" in
     d)
-      DIRECTORY="$OPTARG"
+      DIRECTORY=${OPTARG%"/"}
       ;;
     m)
-      MACRODIR="$OPTARG"
+      MACRODIR=${OPTARG%"/"}
       ;;
     ?)
       echo "script usage: $(basename $0) [-d project_directory] [-m macro_target_dir]" >&2
