@@ -66,8 +66,6 @@ do
     sed -i -e 's/##//g' "$MACROFILE"
 done
 
-exit 5
-
 echo "INFO starting preprocessing of SQF files…"
 for SQFFILE in `find . -iname '*.sqf'`
 do
