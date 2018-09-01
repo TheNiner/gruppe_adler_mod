@@ -276,12 +276,12 @@ switch _mode do
 			_checkboxPrivate cbSetChecked _groupIsPrivate;
 			_fillPlayerName ctrlSetText ([player] call BIS_fnc_getName);
 			_fillPlayerSide ctrlSetText (["GetSideFormattedString", [_groupSide]] call DISPLAY);
-			_fillPlayerScore ctrlSetText str score player;
+			_fillPlayerScore ctrlSetText (str score player);
 
 			// Update edit box only if player is not leader (cannot edit)
 			private _lastPlayerGroup = uiNamespace getVariable [VAR_LAST_PLAYER_GROUP, grpNull];
 
-			if (!_playerIsLeader || {_initialUpdate} || {_playerGroup != _lastPlayerGroup} || {ctrlText _editGroupName == ["ClampString", [localize "STR_A3_RscDisplayDynamicGroups_Hint"]] call DISPLAY}) then
+			if (!_playerIsLeader || {_initialUpdate} || {_playerGroup != _lastPlayerGroup} || {ctrlText _editGroupName == (["ClampString", [localize "STR_A3_RscDisplayDynamicGroups_Hint"]] call DISPLAY)}) then
 			{
 				_editGroupName ctrlSetText _groupName;
 			};
