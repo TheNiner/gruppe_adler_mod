@@ -1,7 +1,7 @@
 #include "script_component.hpp"
 /*
  * Author: Salbei
- * Applys ABS, reduzing the wound count below 50.
+ * Applys ABS, reduzing the wound count below set Value.
  *
  * Arguments:
  * 0: Target <OBJECT>
@@ -33,6 +33,6 @@ private _notNeededWounds = [];
 
 if (count _wounds <= 50) exitWith {};
 
-_wounds resize ((round(random 30)) +20);
+_wounds resize GVAR(amountOfWoundsForABS);
 _openWounds = (_wounds + _notNeededWounds) call BIS_fnc_arrayShuffle;
 _target setVariable ["ace_medical_openWounds", _openWounds, true];

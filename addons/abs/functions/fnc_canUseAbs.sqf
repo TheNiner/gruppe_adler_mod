@@ -22,12 +22,27 @@ if (GVAR(allowABS) == 0) exitWith { false };
 if !(_target isKindOf "CAManBase") exitWith { false };
 
 // Allow self treatment check
-if (_caller == _target) exitwith {false};
+if (_caller == _target) exitwith { false };
+
+//check if mediical system is aktiv & for enough bandages
+private _return = switch (ace_medical_level) do {
+   case 0 : {false};
+   case 1 : {
+      [_caller, 0] call FUNC(checkLoadout);
+   };
+   case 2 : {
+      [_caller, 1] call FUNC(checkLoadout);
+   };
+};
+
+if !(_return) exitWith { false };
 
 //check if needs medic
-if ((GVAR(allowABS) == 1) && {!([_caller, _medicRequired] call FUNC(isMedic))}) exitwith { false };
+if ((GVAR(allowABS) == 1) && {!([_caller, GVAR(allowABS)] call ace_medical_fnc_isMedic)}) exitwith { false };
+
+//check for wounds
 private _openWounds = _target getVariable ["ace_medical_openWounds", []];
-if (count _openWounds == 0) exitWith {false}; // nothing to do here!
+if (count _openWounds <= 50) exitWith { false };
 
 private _wounds = [0,0,0,0,0,0];
 
@@ -35,7 +50,7 @@ private _wounds = [0,0,0,0,0,0];
    _x params ["", "", "_bodyPart", "_numOpenWounds"];
 
    switch (_bodyPart) do {
-      
+
       // Head
       case 0: {
          _wounds set [_bodyPart, ((_wounds select _bodyPart) + _numOpenWounds)];
@@ -68,6 +83,6 @@ private _wounds = [0,0,0,0,0,0];
    };
 } forEach _openWounds;
 
-if (count (_wounds select _selection) <= 50) exitWith { false };
+if (count (_wounds select _selection) <= GVAR(amountOfWoundsForABS)) exitWith { false };
 
 true
