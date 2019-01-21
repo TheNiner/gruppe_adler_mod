@@ -1,26 +1,25 @@
 params ["_unit", "_level"];
 
 private _loadout = getUnitLoadout _unit;
-private _items = [];
+private _bandages = [[],[],[]];
+private _bandagesCount = 0;
 {
    private _itemsInLoadout = _loadout select _x;
+   private _index = _forEachIndex;
    if !(_itemsInLoadout isEqualTo [] && {!((_itemsInLoadout select 1) isEqualTo [])}) then {
-      _items append (_itemsInLoadout select 1);
+      {
+         private _item = _x;
+         {
+            if (_item in _x) then {
+               _bandages set [_index, ((_bandages select _index) pushback _x)];
+               _bandagesCount = _bandagesCount +1;
+            };
+         }forEach ([["ACE_fieldDressing"], ["ACE_packingBandage", "ACE_elasticBandage", "ACE_quikclot"]] select (_level == 0));
+      } forEach (_itemsInLoadout select 1);
    };
 }forEach [3,4,5];
 
-if (_items isEqualTo []) exitWith { false };
-private _bandages = [];
-{
-   private _item = _x;
-   {
-      if (_item in _x) then {
-         _bandages pushback _x;
-      };
-   }forEach ([["ACE_fieldDressing"], ["ACE_packingBandage", "ACE_elasticBandage", "ACE_quikclot"]] select (_level == 0));
-} forEach _items;
-
-if (count _bandages <= GVAR(amountOfBandagesForABS)) exitWith { false };
+if (_bandagesCount <= GVAR(amountOfBandagesForABS)) exitWith { false };
 
 GVAR(bandagesOnUnit) = _bandages;
 
