@@ -53,5 +53,5 @@ for "_i" from 1 to GVAR(amountOfBandagesForABS) do {
       };
    };
 
-   if (_kickOut) exitWith {diag_log format ["Not enough Bandages: %1 missing.", (GVAR(amountOfBandagesForABS) - _i)};
+   if (_kickOut) exitWith {diag_log format ["Not enough Bandages: %1 missing.", (GVAR(amountOfBandagesForABS) - _i)]};
 };
